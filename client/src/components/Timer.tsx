@@ -5,7 +5,7 @@ interface TimerProps {
   initialTime: number;
 }
 
-function Timer({ initialTime }: TimerProps) {
+function TimerLogic({ initialTime }: TimerProps) {
   const [time, setTime] = useState(initialTime);
   const [paused, setPaused] = useState(false);
 
@@ -28,7 +28,9 @@ function Timer({ initialTime }: TimerProps) {
   }, [paused, time]);
 
   const handlePause = () => {
-    setPaused(!paused);
+    if (time > 0) {
+      setPaused(!paused);
+    }
   };
 
   const handleReset = () => {
@@ -36,10 +38,30 @@ function Timer({ initialTime }: TimerProps) {
     setPaused(true);
   };
 
+  return { time, paused, handlePause, handleReset };
+}
+
+function TimerFormat(time: number) {
+  let hours = Math.floor(time / 3600);
+  let minutes = Math.floor((time - hours * 3600) / 60);
+  let seconds = time - hours * 3600 - minutes * 60;
+
+  return { hours, minutes, seconds };
+}
+
+function Timer({ initialTime }: TimerProps) {
+  const { time, paused, handlePause, handleReset } = TimerLogic({
+    initialTime,
+  });
+
+  const { hours, minutes, seconds } = TimerFormat(time);
+
   return (
     <div>
       <h2>SkillTimer</h2>
-      <p>Time: {time}</p>
+      <p>
+        {hours}:{minutes}:{seconds}
+      </p>
       <button onClick={handlePause}>{paused ? "Resume" : "Pause"}</button>
       <button onClick={handleReset}>Reset</button>
     </div>
